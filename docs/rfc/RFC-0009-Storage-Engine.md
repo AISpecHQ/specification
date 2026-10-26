@@ -96,6 +96,26 @@ Objects MUST NOT be embedded inside unrelated objects.
 
 ---
 
+# Persistence Synchronization
+
+An SDK that exposes `saveRepository()` MUST complete pending persistence work
+and synchronize canonical data according to the storage backend's guarantees
+before reporting success, as defined by RFC-0010.
+
+For filesystem-backed storage, this operation MUST synchronize the contents of
+all canonical repository files through the operating system's file
+synchronization mechanism. This does not guarantee directory-entry metadata,
+atomic persistence across multiple files, or durability beyond the guarantees
+of the operating system, filesystem, and hardware. Synchronizing files may
+partially succeed before a later synchronization fails; implementations MUST
+report the failure and MUST NOT claim that the repository was fully saved.
+
+An implementation MAY persist mutations immediately. In that case,
+`saveRepository()` remains an explicit synchronization barrier and MUST NOT
+create or alter logical repository objects.
+
+---
+
 # Serialization
 
 The canonical serialization format is YAML.

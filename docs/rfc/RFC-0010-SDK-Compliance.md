@@ -83,6 +83,33 @@ Every compliant SDK MUST implement the following operations.
 * openRepository()
 * saveRepository()
 
+### `saveRepository()` contract
+
+`saveRepository()` takes no arguments. It MUST complete any pending persistence
+work and return successfully only after the repository's canonical data has
+been synchronized using the guarantees available from its storage backend.
+Implementations MUST report storage or synchronization failures and MUST NOT
+report success after a failed synchronization.
+
+The operation MUST NOT change the repository's logical contents. Repeating it
+without intervening changes MUST be safe and MUST NOT create additional
+repository objects. A failure may occur after some files have already been
+synchronized; `saveRepository()` is not a multi-object transaction and does
+not roll back successful earlier writes.
+
+For filesystem-backed implementations, canonical repository files MUST be
+flushed through the operating system's file synchronization mechanism before
+the operation returns. This guarantees that file contents have been handed to
+the operating system's storage layer, subject to the guarantees of the
+operating system, filesystem, and hardware. It does not independently
+guarantee directory-entry metadata, atomic persistence across multiple files,
+or survival of hardware or power failure.
+
+This contract resolves an ambiguity in the original required-operation list.
+It does not require deferred writes or an in-memory dirty buffer. Engines that
+persist each mutation immediately still provide `saveRepository()` as an
+explicit synchronization barrier.
+
 ---
 
 ## Commit

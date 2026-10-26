@@ -199,6 +199,12 @@ Update Index
 Save Repository
 ```
 
+For filesystem-backed Engines, saving synchronizes canonical file contents
+through the operating system's file synchronization mechanism. This is not an
+atomic multi-file transaction; the persistence limits are defined by
+[RFC-0010](../rfc/RFC-0010-SDK-Compliance.md) and
+[RFC-0009](../rfc/RFC-0009-Storage-Engine.md).
+
 ---
 
 # Object Cache
